@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iguanas - Guía de Facilitación y Procesamiento</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Montserrat & Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- LIBRERÍA PUTER.JS (Permite IA gratuita sin necesidad de API Keys) -->
+  <script src="https://js.puter.com/v2/"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #ffffff;
+      color: #1e293b;
+    }
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    .bg-iguanas-pattern {
+      background-color: #ffffff;
+      background-image: radial-gradient(#23a538 0.5px, transparent 0.5px), radial-gradient(#ea5b19 0.5px, #ffffff 0.5px);
+      background-size: 20px 20px;
+      background-position: 0 0, 10px 10px;
+    }
+
+    .card-shadow {
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    }
+    
+    .card-tab {
+      display: inline-block;
+      padding: 6px 18px;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+
+    .tab-btn {
+      transition: all 0.25s ease;
+    }
+    .tab-btn.active {
+      border-bottom: 4px solid #ea5b19;
+      color: #0f683a;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-iguanas-pattern text-slate-800 flex flex-col justify-between selection:bg-orange-500 selection:text-white">
+
+  <!-- ENCABEZADO Y NAVEGACIÓN -->
+  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Logo Oficial -->
+      <div class="flex items-center gap-3 cursor-pointer" onclick="document.getElementById('logoInput').click()" title="Haz clic para cambiar la imagen del logo">
+        <img id="mainLogo" src="logo-iguanas.png" alt="Logo Iguanas Educación al Aire Libre" class="h-12 sm:h-14 object-contain" onerror="this.src='https://via.placeholder.com/180x60?text=Iguanas+Camp'">
+        <input type="file" id="logoInput" accept="image/*" class="hidden" onchange="previewLogo(event)">
+      </div>
+
+      <!-- Menú de Navegación -->
+      <nav class="hidden md:flex space-x-1 lg:space-x-4">
+        <button onclick="switchTab(1)" id="tab-1" class="tab-btn active px-3 py-2 text-sm font-semibold text-slate-600 hover:text-green-700">
+          1. ¿Qué es?
+        </button>
+        <button onclick="switchTab(2)" id="tab-2" class="tab-btn px-3 py-2 text-sm font-semibold text-slate-600 hover:text-green-700">
+          2. ¿Por qué es Clave?
+        </button>
+        <button onclick="switchTab(3)" id="tab-3" class="tab-btn px-3 py-2 text-sm font-semibold text-slate-600 hover:text-red-600">
+          3. Pros y Contras
+        </button>
+        <button onclick="switchTab(4)" id="tab-4" class="tab-btn px-3 py-2 text-sm font-semibold text-slate-600 hover:text-orange-600">
+          4. Consejos Guía
+        </button>
+        <button onclick="switchTab(5)" id="tab-5" class="tab-btn px-3 py-2 text-sm font-semibold text-slate-600 hover:text-blue-700">
+          5. El Procesamiento
+        </button>
+      </nav>
+
+      <!-- Botón para abrir el Asistente IA -->
+      <button onclick="toggleIaModal()" class="bg-[#ea5b19] hover:bg-orange-600 text-white font-bold py-2.5 px-5 rounded-full shadow-md flex items-center gap-2 transition transform active:scale-95">
+        <i class="fa-solid fa-wand-magic-sparkles text-yellow-300"></i>
+        <span>La Iguana Maestra</span>
+      </button>
+    </div>
+
+    <!-- Navegación Móvil -->
+    <div class="md:hidden flex overflow-x-auto border-t border-slate-100 px-2 py-2 gap-2 bg-slate-50">
+      <button onclick="switchTab(1)" class="whitespace-nowrap px-3 py-1.5 text-xs font-bold rounded bg-green-600 text-white">1. Concepto</button>
+      <button onclick="switchTab(2)" class="whitespace-nowrap px-3 py-1.5 text-xs font-bold rounded bg-green-800 text-white">2. Importancia</button>
+      <button onclick="switchTab(3)" class="whitespace-nowrap px-3 py-1.5 text-xs font-bold rounded bg-red-600 text-white">3. Pros/Contras</button>
+      <button onclick="switchTab(4)" class="whitespace-nowrap px-3 py-1.5 text-xs font-bold rounded bg-orange-600 text-white">4. Consejos</button>
+      <button onclick="switchTab(5)" class="whitespace-nowrap px-3 py-1.5 text-xs font-bold rounded bg-blue-800 text-white">5. Cierre</button>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+
+    <!-- DIAPOSITIVA 1 -->
+    <section id="page-1" class="page-content space-y-8 animate-fadeIn">
+      <div class="border-l-8 border-[#23a538] pl-4 py-1 bg-green-50/50 rounded-r-lg">
+        <span class="text-xs font-bold text-[#0f683a] uppercase tracking-wider">Módulo Metodológico 01</span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900">¿Qué es la Facilitación?</h1>
+        <p class="text-slate-600 text-base sm:text-lg mt-1">El arte de guiar sin imponer: convirtiendo actividades en aprendizajes significativos.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <div class="rounded-2xl overflow-hidden card-shadow bg-[#23a538] text-white p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <div class="card-tab bg-[#0f683a] text-white -mt-6 -ml-6 sm:-mt-8 sm:-ml-8 mb-6 inline-block">
+              <i class="fa-solid fa-compass mr-2"></i>El Rol del Guía
+            </div>
+            <h2 class="text-2xl font-bold mb-4 text-white">El Puente hacia el Entendimiento</h2>
+            <p class="text-white/95 text-base sm:text-lg leading-relaxed mb-6">
+              Facilitar es el arte de acompañar a una <strong class="text-yellow-300 font-bold">cabaña</strong> para que sus integrantes descubran aprendizajes y soluciones por sí mismos a través de la experiencia, en lugar de recibir órdenes o respuestas directas.
+            </p>
+            <div class="bg-black/15 rounded-xl p-4 border border-white/20 text-sm leading-relaxed text-white">
+              <i class="fa-solid fa-quote-left text-yellow-300 text-lg mr-2"></i>
+              El <strong>Guía</strong> no es un instructor rígido ni un simple animador: es el facilitador que brinda las herramientas para que los campistas piensen y actúen por su cuenta.
+            </div>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/20 text-xs text-white/80 flex items-center justify-between">
+            <span>Iguanas Educación al Aire Libre</span>
+            <span class="font-bold">Riesgo Controlado & Aprendizaje</span>
+          </div>
+        </div>
+
+        <div class="rounded-2xl overflow-hidden card-shadow bg-[#0f683a] text-white p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <div class="card-tab bg-[#23a538] text-white -mt-6 -ml-6 sm:-mt-8 sm:-ml-8 mb-6 inline-block">
+              <i class="fa-solid fa-tree mr-2"></i>En el Terreno
+            </div>
+            <h2 class="text-2xl font-bold mb-4 text-white">Herramientas para la Vida</h2>
+            <p class="text-white/95 text-base sm:text-lg leading-relaxed mb-4">
+              Una de las claves del éxito de nuestro programa recae en cómo las actividades de riesgo controlado no solo entretienen, sino que conectan socioemocionalmente con el chamo.
+            </p>
+            <ul class="space-y-3 text-sm text-white/90">
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check-circle text-emerald-400 mt-1"></i>
+                <span><strong>Desarrollo de autonomía:</strong> El chamo aprende a tomar decisiones dentro de su cabaña.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check-circle text-emerald-400 mt-1"></i>
+                <span><strong>Seguridad socioemocional:</strong> Ambientes donde equivocarse es parte del proceso.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <i class="fa-solid fa-check-circle text-emerald-400 mt-1"></i>
+                <span><strong>Impacto duradero:</strong> Herramientas que trascienden el campamento.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/20 text-xs text-white/80">
+            <span>Metodología Experiencial Aplicada</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8 card-shadow">
+        <h3 class="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2">
+          <i class="fa-solid fa-flask text-[#23a538]"></i>
+          Caso Práctico: Explicación de una Gymkhana en Campamento
+        </h3>
+        <p class="text-slate-600 text-sm mb-6">Compara cómo la postura del Guía transforma el resultado de la misma actividad:</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-red-50 border-l-4 border-red-500 p-5 rounded-r-xl">
+            <div class="flex items-center gap-2 text-red-700 font-bold text-base mb-3">
+              <i class="fa-solid fa-xmark-circle"></i>
+              <span>Actividad SIN Facilitación ni Procesamiento</span>
+            </div>
+            <p class="text-xs text-slate-700 leading-relaxed mb-3">
+              El guía explica por encima la gymkhana y no atiende dudas ni demuestra cómo realizarla. Durante el juego no corrige ni apoya al ver fallas normativas.
+            </p>
+            <div class="bg-white p-3 rounded border border-red-200 text-xs text-slate-800 italic">
+              <strong>Cierre del Guía al perder:</strong> "Perdieron porque no se escucharon. Para la próxima hablen uno por uno y háganle caso a su capitán."
+            </div>
+            <p class="text-[11px] text-red-600 mt-2 font-medium">
+              ❌ Resultado: Los chamos se sienten incapaces y sin un cierre correcto.
+            </p>
+          </div>
+
+          <div class="bg-emerald-50 border-l-4 border-emerald-500 p-5 rounded-r-xl">
+            <div class="flex items-center gap-2 text-emerald-800 font-bold text-base mb-3">
+              <i class="fa-solid fa-circle-check"></i>
+              <span>Actividad CON Facilitación y Procesamiento</span>
+            </div>
+            <p class="text-xs text-slate-700 leading-relaxed mb-3">
+              El guía explica adecuadamente, demuestra con ejemplos y apoya activamente. Motiva a seguir intentando a pesar de las fallas.
+            </p>
+            <div class="bg-white p-3 rounded border border-emerald-200 text-xs text-slate-800 italic">
+              <strong>Cierre del Guía con preguntas:</strong> "¿Qué causó que la estrategia no funcionara? ¿Cómo decidieron quién hablaba? ¿Cómo se sintieron?"
+            </div>
+            <p class="text-[11px] text-emerald-700 mt-2 font-medium">
+              ✅ Resultado: La cabaña llega a sus propias conclusiones y se lleva herramientas útiles.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 2 -->
+    <section id="page-2" class="page-content space-y-8 hidden animate-fadeIn">
+      <div class="border-l-8 border-[#0f683a] pl-4 py-1 bg-green-50/50 rounded-r-lg">
+        <span class="text-xs font-bold text-[#0f683a] uppercase tracking-wider">Módulo Metodológico 02</span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900">¿Por qué es importante la Facilitación?</h1>
+        <p class="text-slate-600 text-base sm:text-lg mt-1">Transformando la recreación en crecimiento socioemocional significativo.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="rounded-2xl overflow-hidden card-shadow bg-[#23a538] text-white p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <div class="card-tab bg-[#0f683a] text-white -mt-6 -ml-6 sm:-mt-8 sm:-ml-8 mb-6 inline-block">
+              <i class="fa-solid fa-brain mr-2"></i>Pensamiento Crítico
+            </div>
+            <h2 class="text-2xl font-bold mb-4 text-white">Más allá de la Instrucción Mecánica</h2>
+            <p class="text-white/95 text-base sm:text-lg leading-relaxed mb-4">
+              Cuando un guía se limita a dar instrucciones mecánicas, los campistas disfrutan el juego pero pierden la oportunidad de reflexionar.
+            </p>
+            <p class="text-white/90 text-sm leading-relaxed">
+              La facilitación estimula activamente el pensamiento crítico: los chamos entienden el <em>porqué</em> de sus acciones dentro de la cabaña.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/20 text-xs text-white/80">
+            <span>Iguanas - Educación Experiencial</span>
+          </div>
+        </div>
+
+        <div class="rounded-2xl overflow-hidden card-shadow bg-[#0f683a] text-white p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <div class="card-tab bg-[#23a538] text-white -mt-6 -ml-6 sm:-mt-8 sm:-ml-8 mb-6 inline-block">
+              <i class="fa-solid fa-users-gear mr-2"></i>Liderazgo & Cohesión
+            </div>
+            <h2 class="text-2xl font-bold mb-4 text-white">Crecimiento Personal y de Cabaña</h2>
+            <p class="text-white/95 text-base sm:text-lg leading-relaxed mb-4">
+              Facilitar fomenta la empatía, la resolución autónoma de conflictos y el surgimiento de un liderazgo positivo.
+            </p>
+            <ul class="space-y-3 text-sm text-white/90">
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-heart text-emerald-400"></i>
+                <span>Fomento de la empatía entre compañeros de cabaña.</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-comments text-emerald-400"></i>
+                <span>Espacio para reflexionar sobre lo vivido abiertamente.</span>
+              </li>
+              <li class="flex items-center gap-2">
+                <i class="fa-solid fa-award text-emerald-400"></i>
+                <span>Apropiación del aprendizaje por parte del grupo.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/20 text-xs text-white/80">
+            <span>Formación Integral del Campista</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 3 -->
+    <section id="page-3" class="page-content space-y-8 hidden animate-fadeIn">
+      <div class="border-l-8 border-[#e63e1a] pl-4 py-1 bg-red-50/50 rounded-r-lg">
+        <span class="text-xs font-bold text-[#e63e1a] uppercase tracking-wider">Módulo Metodológico 03</span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Pros y Contras: Uso de la Facilitación</h1>
+        <p class="text-slate-600 text-base sm:text-lg mt-1">Balance entre la ejecución directiva y la facilitación consciente.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="rounded-2xl overflow-hidden card-shadow bg-[#e63e1a] text-white p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <div class="card-tab bg-[#ea5b19] text-white -mt-6 -ml-6 sm:-mt-8 sm:-ml-8 mb-6 inline-block">
+              <i class="fa-solid fa-bolt mr-2"></i>Ejecución Directiva
+            </div>
+            <h2 class="text-2xl font-bold mb-4 text-white">Actividad SIN Facilitación</h2>
+            
+            <div class="mb-6">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-yellow-300 mb-2">VENTAJAS (PROS):</h3>
+              <ul class="space-y-2 text-sm text-white/95">
+                <li class="flex items-start gap-2">
+                  <i class="fa-solid fa-check text-yellow-300 mt-1"></i>
+                  <span>Rápida ejecución y control absoluto del tiempo por parte del guía.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                  <i class="fa-solid fa-check text-yellow-300 mt-1"></i>
+                  <span>Menor exigencia de preparación socioemocional previa para el staff.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-red-200 mb-2">DESVENTAJAS (CONTRAS):</h3>
+              <ul class="space-y-2 text-sm text-white/90">
+                <li class="flex items-start gap-2">
+                  <i class="fa-solid fa-xmark text-red-200 mt-1"></i>
+                  <span>Aprendizaje superficial; los campistas se vuelven dependientes del guía.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-2xl overflow-hidden card-shadow bg-[#ea5b19] text-white p-6 sm:p-8 flex flex-col justify-between">
+          <div>
+            <div class="card-tab bg-[#e63e1a] text-white -mt-6 -ml-6 sm:-mt-8 sm:-ml-8 mb-6 inline-block">
+              <i class="fa-solid fa-seedling mr-2"></i>Enfoque Iguanas
+            </div>
+            <h2 class="text-2xl font-bold mb-4 text-white">Actividad CON Facilitación</h2>
+            
+            <div class="mb-6">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-yellow-200 mb-2">VENTAJAS (PROS):</h3>
+              <ul class="space-y-2 text-sm text-white/95">
+                <li class="flex items-start gap-2">
+                  <i class="fa-solid fa-star text-yellow-300 mt-1"></i>
+                  <span><strong>Alto impacto emocional:</strong> Los chicos se adueñan del aprendizaje.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 4 -->
+    <section id="page-4" class="page-content space-y-8 hidden animate-fadeIn">
+      <div class="border-l-8 border-[#ea5b19] pl-4 py-1 bg-orange-50/50 rounded-r-lg">
+        <span class="text-xs font-bold text-[#ea5b19] uppercase tracking-wider">Módulo Metodológico 04</span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Consejos Esenciales para el Facilitador</h1>
+        <p class="text-slate-600 text-base sm:text-lg mt-1">Pautas fundamentales para la intervención y acompañamiento en campo.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="rounded-2xl overflow-hidden card-shadow bg-[#e63e1a] text-white p-6 flex flex-col justify-between">
+          <div>
+            <div class="card-tab bg-[#ea5b19] text-white -mt-6 -ml-6 mb-4 inline-block">
+              01. Escucha
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white flex items-center gap-2">
+              <i class="fa-solid fa-ear-listen text-yellow-300"></i>
+              Escucha Activa sobre el Habla
+            </h3>
+            <p class="text-sm text-white/90 leading-relaxed mb-4">
+              Hacer preguntas para entender genuinamente las respuestas de los chamos y lo que se están llevando.
+            </p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl overflow-hidden card-shadow bg-[#ea5b19] text-white p-6 flex flex-col justify-between">
+          <div>
+            <div class="card-tab bg-[#e63e1a] text-white -mt-6 -ml-6 mb-4 inline-block">
+              02. Empatía
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white flex items-center gap-2">
+              <i class="fa-solid fa-heart-circle-check text-yellow-300"></i>
+              Validación sin Juzgar
+            </h3>
+            <p class="text-sm text-white/90 leading-relaxed mb-4">
+              Evitar decir <em>"eso está mal"</em>. Es mejor reorientar con preguntas amables y empáticas.
+            </p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl overflow-hidden card-shadow bg-[#e63e1a] text-white p-6 flex flex-col justify-between">
+          <div>
+            <div class="card-tab bg-[#ea5b19] text-white -mt-6 -ml-6 mb-4 inline-block">
+              03. Radar
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white flex items-center gap-2">
+              <i class="fa-solid fa-eye text-yellow-300"></i>
+              Observación Invisible
+            </h3>
+            <p class="text-sm text-white/90 leading-relaxed mb-4">
+              Presta atención a las dinámicas durante la actividad para usarlas en la reflexión final.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIAPOSITIVA 5 -->
+    <section id="page-5" class="page-content space-y-8 hidden animate-fadeIn">
+      <div class="border-l-8 border-[#223d84] pl-4 py-1 bg-blue-50/50 rounded-r-lg">
+        <span class="text-xs font-bold text-[#223d84] uppercase tracking-wider">Módulo Metodológico 05</span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Guía para un Enfoque Profundo de Procesamiento</h1>
+        <p class="text-slate-600 text-base sm:text-lg mt-1">Estructura del cierre reflexivo en tres fases.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="rounded-2xl overflow-hidden card-shadow bg-[#223d84] text-white p-6 flex flex-col justify-between">
+          <div>
+            <div class="card-tab bg-[#5a75bd] text-white -mt-6 -ml-6 mb-4 inline-block">
+              Fase 1: Objetiva
+            </div>
+            <h2 class="text-2xl font-bold mb-2 text-white">¿Qué pasó?</h2>
+            <p class="text-xs text-white/90 leading-relaxed">Reconstruir hechos reales del juego sin juzgar.</p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl overflow-hidden card-shadow bg-[#5a75bd] text-white p-6 flex flex-col justify-between">
+          <div>
+            <div class="card-tab bg-[#223d84] text-white -mt-6 -ml-6 mb-4 inline-block">
+              Fase 2: Reflexiva
+            </div>
+            <h2 class="text-2xl font-bold mb-2 text-white">¿Y qué?</h2>
+            <p class="text-xs text-white/90 leading-relaxed">Conectar la experiencia con las emociones del grupo.</p>
+          </div>
+        </div>
+
+        <div class="rounded-2xl overflow-hidden card-shadow bg-[#223d84] text-white p-6 flex flex-col justify-between">
+          <div>
+            <div class="card-tab bg-[#5a75bd] text-white -mt-6 -ml-6 mb-4 inline-block">
+              Fase 3: Aplicación
+            </div>
+            <h2 class="text-2xl font-bold mb-2 text-white">¿Ahora qué?</h2>
+            <p class="text-xs text-white/90 leading-relaxed">Conectar el juego con la vida cotidiana y el campamento.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL INTERACTIVO: LA IGUANA MAESTRA (IA LIBRE SIN API KEY) -->
+  <div id="iaModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      
+      <!-- Encabezado del Modal -->
+      <div class="bg-[#0f683a] text-white p-5 flex items-center justify-between border-b border-emerald-800">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xl shadow-inner">
+            🦎
+          </div>
+          <div>
+            <h3 class="font-extrabold text-lg leading-tight text-white">La Iguana Maestra AI</h3>
+            <p class="text-xs text-emerald-200">Asistente en vivo para Guías de Campamento</p>
+          </div>
+        </div>
+        <button onclick="toggleIaModal()" class="text-white/80 hover:text-white text-2xl font-bold p-1">&times;</button>
+      </div>
+
+      <!-- Formulario -->
+      <div class="p-6 overflow-y-auto space-y-5 text-slate-800">
+        
+        <!-- Grupo de Edad -->
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-700 mb-1 flex items-center gap-1.5">
+            <i class="fa-solid fa-users text-[#23a538]"></i>
+            1. Grupo de Edad de la Cabaña
+          </label>
+          <select id="iaAgeGroup" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-green-600 outline-none">
+            <option value="Niños (5 a 9 años)">Niños (5 a 9 años)</option>
+            <option value="Pre-adolescentes (10 a 13 años)">Pre-adolescentes (10 a 13 años)</option>
+            <option value="Adolescentes (14 a 17 años)">Adolescentes (14 a 17 años)</option>
+            <option value="Staff / Guías en entrenamiento">Staff / Guías en entrenamiento</option>
+          </select>
+        </div>
+
+        <!-- Presets Rápidos -->
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-700 mb-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-bolt text-[#ea5b19]"></i>
+            2. Presets Rápidos (Selecciona un conflicto común)
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <button type="button" onclick="setPreset('Desmotivación por derrota', 'La cabaña perdió en la gymkhana y varios chamos están molestos, frustrados y no quieren hablar ni participar en la siguiente actividad.')" class="p-2.5 bg-slate-100 hover:bg-orange-100 hover:border-orange-400 border border-slate-200 rounded-xl text-left text-xs font-medium text-slate-700 transition">
+              😞 Desmotivación
+            </button>
+            <button type="button" onclick="setPreset('Conflicto de Liderazgo', 'Dos campistas quieren mandar a la vez en la cabaña, se interrumpen, pelean por las decisiones y el resto del grupo se dividió.')" class="p-2.5 bg-slate-100 hover:bg-orange-100 hover:border-orange-400 border border-slate-200 rounded-xl text-left text-xs font-medium text-slate-700 transition">
+              👑 Liderazgo
+            </button>
+            <button type="button" onclick="setPreset('Poca Participación', 'Hay un chamo en la cabaña que se mantiene apartado, no opina durante las dinámicas y los demás no lo están tomando en cuenta.')" class="p-2.5 bg-slate-100 hover:bg-orange-100 hover:border-orange-400 border border-slate-200 rounded-xl text-left text-xs font-medium text-slate-700 transition">
+              🤐 Aislamiento
+            </button>
+            <button type="button" onclick="setPreset('Falta de Escucha', 'La cabaña está muy acelerada, interrumpe las explicaciones de la actividad y nadie se escucha al momento de armar la estrategia.')" class="p-2.5 bg-slate-100 hover:bg-orange-100 hover:border-orange-400 border border-slate-200 rounded-xl text-left text-xs font-medium text-slate-700 transition">
+              📢 Desorden
+            </button>
+          </div>
+        </div>
+
+        <!-- Descripción del Caso -->
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-700 mb-1 flex items-center gap-1.5">
+            <i class="fa-solid fa-pen-to-square text-[#223d84]"></i>
+            3. Descripción del Caso
+          </label>
+          <textarea id="iaSituation" rows="3" placeholder="Describe lo que ocurre en la cabaña o elige un preset..." class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-green-600 outline-none resize-none"></textarea>
+        </div>
+
+        <button onclick="generateAdvice()" id="btnGenerateAdvice" class="w-full bg-[#ea5b19] hover:bg-orange-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>Generar Estrategia Personalizada con IA</span>
+        </button>
+
+        <!-- Área de Respuesta -->
+        <div id="iaResponseArea" class="hidden mt-4 bg-slate-50 border border-slate-200 rounded-2xl p-5 text-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+            <span class="font-bold text-[#0f683a] flex items-center gap-2">
+              <i class="fa-solid fa-comment-dots"></i> Estrategia Adaptada:
+            </span>
+            <button onclick="speakResponse()" class="text-xs bg-slate-200 hover:bg-slate-300 px-2.5 py-1 rounded-md text-slate-700 flex items-center gap-1">
+              <i class="fa-solid fa-volume-high"></i> Escuchar
+            </button>
+          </div>
+          <div id="iaResponseText" class="text-slate-700 leading-relaxed whitespace-pre-line text-xs sm:text-sm"></div>
+        </div>
+
+      </div>
+
+      <div class="bg-slate-100 px-6 py-3 border-t border-slate-200 text-right">
+        <button onclick="toggleIaModal()" class="px-4 py-2 bg-slate-300 hover:bg-slate-400 text-slate-800 rounded-xl text-xs font-bold">Cerrar</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PIE DE PÁGINA -->
+  <footer class="bg-white border-t border-slate-200 py-6 mt-12">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 space-y-2">
+      <p class="font-bold text-slate-700">Iguanas Educación al Aire Libre &copy; 2026</p>
+      <p>Manual Metodológico Digital de Facilitación y Procesamiento para Guías de Campamento.</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPT CONEXIÓN A PUTER.JS (IA DIRECTA SIN API KEY) -->
+  <script>
+    function switchTab(pageNum) {
+      document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+      const targetPage = document.getElementById(`page-${pageNum}`);
+      if (targetPage) targetPage.classList.remove('hidden');
+
+      const targetTab = document.getElementById(`tab-${pageNum}`);
+      if (targetTab) targetTab.classList.add('active');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleIaModal() {
+      const modal = document.getElementById('iaModal');
+      modal.classList.toggle('hidden');
+    }
+
+    function setPreset(titulo, descripcion) {
+      const textarea = document.getElementById('iaSituation');
+      textarea.value = `[${titulo}]: ${descripcion}`;
+      textarea.focus();
+    }
+
+    function previewLogo(event) {
+      const reader = new FileReader();
+      reader.onload = function() {
+        const output = document.getElementById('mainLogo');
+        output.src = reader.result;
+      };
+      if (event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+      }
+    }
+
+    // CONEXIÓN DIRECTA A PUTER.JS (CERO PASOS PARA EL GUÍA)
+    async function generateAdvice() {
+      const ageGroup = document.getElementById('iaAgeGroup').value;
+      const situation = document.getElementById('iaSituation').value.trim();
+      const responseArea = document.getElementById('iaResponseArea');
+      const responseText = document.getElementById('iaResponseText');
+      const btn = document.getElementById('btnGenerateAdvice');
+
+      if (!situation) {
+        alert('Por favor, selecciona un preset o describe la situación de la cabaña.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Generando estrategia en vivo...`;
+      responseArea.classList.remove('hidden');
+      responseText.innerHTML = `<em>Creando recomendación adaptada a ${ageGroup}... por favor espera unos segundos.</em>`;
+
+      const promptSystem = `Eres "La Iguana Maestra", un experto facilitador y formador de guías en la organización de campamentos "Iguanas Educación al Aire Libre".
+Tu tarea es aconsejar a un guía de campamento que enfrenta un problema en el campo con su cabaña.
+
+REGLAS OBLIGATORIAS:
+1. Adapta el lenguaje y tono al grupo de edad: ${ageGroup}.
+2. Basa la estrategia en las 3 Fases de Procesamiento de Iguanas:
+   - Fase 1 (Objetiva): ¿Qué pasó? (Reconstruir hechos sin juzgar)
+   - Fase 2 (Reflexiva): ¿Y qué? (Validar emociones y reflexión socioemocional)
+   - Fase 3 (Aplicación): ¿Ahora qué? (Compromiso y herramientas para la vida/campamento)
+3. Proporciona preguntas EXACTAS entre comillas que el guía le pueda hacer directamente a los chamos.
+4. Mantén una respuesta concisa, empática, muy práctica y directa para el campo.
+
+SITUACIÓN OCURRIDA EN EL CAMPO:
+${situation}`;
+
+      try {
+        // Petición directa a la IA mediante Puter.js sin requerir llaves ni registros
+        const response = await puter.ai.chat(promptSystem);
+        
+        let output = response.toString();
+        // Formateo de negritas
+        output = output.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        responseText.innerHTML = output;
+
+      } catch (err) {
+        console.error("Error al conectar con la IA libre:", err);
+        responseText.innerHTML = `⚠️ Ocurrió un inconveniente al conectar con el asistente de IA. Inténtalo de nuevo en unos segundos.`;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> <span>Generar Estrategia Personalizada con IA</span>`;
+      }
+    }
+
+    function speakResponse() {
+      const text = document.getElementById('iaResponseText').innerText;
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES';
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert('Tu navegador no soporta lectura por voz.');
+      }
+    }
+  </script>
+</body>
+</html>
